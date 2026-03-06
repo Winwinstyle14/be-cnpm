@@ -129,8 +129,11 @@ const getAllProduct = (limit, page, sort, filter) => {
             const totalProduct = await Product.count()
             let allProduct = []
             if (filter) {
-                const label = filter[0];
-                const allObjectFilter = await Product.find({ [label]: { '$regex': filter[1] } }).limit(limit).skip(page * limit).sort({createdAt: -1, updatedAt: -1})
+                const label = filter[0]
+                const allObjectFilter = await Product.find({
+                    // Thêm $options: 'i' để search không phân biệt hoa/thường
+                    [label]: { '$regex': filter[1], '$options': 'i' }
+                }).limit(limit).skip(page * limit).sort({ createdAt: -1, updatedAt: -1 })
                 resolve({
                     status: 'OK',
                     message: 'Success',
@@ -143,7 +146,7 @@ const getAllProduct = (limit, page, sort, filter) => {
             if (sort) {
                 const objectSort = {}
                 objectSort[sort[1]] = sort[0]
-                const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort).sort({createdAt: -1, updatedAt: -1})
+                const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort).sort({ createdAt: -1, updatedAt: -1 })
                 resolve({
                     status: 'OK',
                     message: 'Success',
@@ -153,10 +156,10 @@ const getAllProduct = (limit, page, sort, filter) => {
                     totalPage: Math.ceil(totalProduct / limit)
                 })
             }
-            if(!limit) {
-                allProduct = await Product.find().sort({createdAt: -1, updatedAt: -1})
-            }else {
-                allProduct = await Product.find().limit(limit).skip(page * limit).sort({createdAt: -1, updatedAt: -1})
+            if (!limit) {
+                allProduct = await Product.find().sort({ createdAt: -1, updatedAt: -1 })
+            } else {
+                allProduct = await Product.find().limit(limit).skip(page * limit).sort({ createdAt: -1, updatedAt: -1 })
             }
             resolve({
                 status: 'OK',
